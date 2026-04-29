@@ -1,0 +1,1410 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M24 Venture Capital</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  @property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: rgba(255,255,255,0.03);
+    --bg-card-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(139,92,246,0.35);
+    --violet: #8b5cf6;
+    --violet-light: #c4b0f0;
+    --violet-dim: #a78bfa;
+    --green: #6ee7b7;
+    --green-dim: #34d399;
+    --text-primary: #f0eeff;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --glow: rgba(139,92,246,0.08);
+    --glow-strong: rgba(139,92,246,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* â”€â”€â”€ NOISE TEXTURE OVERLAY â”€â”€â”€ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* â”€â”€â”€ CURSOR GLOW â”€â”€â”€ */
+  #cursor-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle 300px, rgba(139,92,246,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    will-change: transform;
+  }
+  #cursor-glow.visible { opacity: 1; }
+
+  /* â”€â”€â”€ SCROLL PROGRESS â”€â”€â”€ */
+  #scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--violet), var(--violet-light));
+    z-index: 101;
+    transform-origin: left;
+    transform: scaleX(0);
+    will-change: transform;
+  }
+
+  /* â”€â”€â”€ NAVBAR â”€â”€â”€ */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(10,10,15,0.7);
+    transition: background 0.4s, box-shadow 0.4s, border-color 0.4s;
+  }
+
+  nav.scrolled {
+    background: rgba(10,10,15,0.92);
+    box-shadow: 0 1px 30px rgba(139,92,246,0.06);
+    border-bottom-color: rgba(139,92,246,0.12);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-svg {
+    height: 22px;
+    width: auto;
+    display: block;
+    opacity: 0.95;
+    transition: opacity 0.2s;
+  }
+
+  .nav-logo:hover .logo-svg { opacity: 1; }
+
+  .nav-cta {
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.3);
+    color: var(--violet-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    will-change: transform;
+  }
+
+  .nav-cta:hover {
+    background: rgba(139,92,246,0.22);
+    border-color: rgba(139,92,246,0.5);
+  }
+
+  /* â”€â”€â”€ MAGNETIC BUTTON RESET â”€â”€â”€ */
+  .magnetic { transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+  /* â”€â”€â”€ HERO â”€â”€â”€ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 48px 80px;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(139,92,246,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(60px, 10vw, 140px);
+    white-space: nowrap;
+    color: rgba(255,255,255,0.028);
+    letter-spacing: -0.02em;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    text-align: center;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 900px;
+    animation: fadeInUp 1s ease both;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--violet-dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    border: 1px solid rgba(139,92,246,0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(139,92,246,0.06);
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--violet);
+    animation: pulse-violet 2s ease-in-out infinite;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(36px, 5.5vw, 72px);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    background: linear-gradient(90deg, var(--violet-light) 0%, var(--violet) 35%, var(--violet-light) 65%, var(--violet) 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 5s linear infinite;
+    margin-bottom: 24px;
+  }
+
+  .hero-line { display: block; }
+
+  .hero-desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(15px, 1.8vw, 18px);
+    color: var(--text-secondary);
+    font-weight: 300;
+    max-width: 520px;
+    margin: 0 auto 52px;
+    line-height: 1.7;
+  }
+
+  /* â”€â”€â”€ COLUMNS SECTION â”€â”€â”€ */
+  .columns-section {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 48px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.5s forwards;
+  }
+
+  .columns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .column-card {
+    background: var(--bg-card);
+    padding: 32px 28px;
+    transition: background 0.3s;
+  }
+
+  .column-card:hover { background: var(--bg-card-hover); }
+
+  .col-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .col-title::before {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 1px;
+    background: var(--violet);
+    opacity: 0.6;
+  }
+
+  .network-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .network-item.visible { opacity: 1; transform: translateY(0); }
+  .network-item:last-child { border-bottom: none; }
+
+  .network-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: rgba(240,238,255,0.8);
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .status-live { color: var(--green); }
+  .status-dev { color: var(--violet-dim); }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-live {
+    background: var(--green);
+    animation: pulse-green 1.8s ease-in-out infinite;
+  }
+
+  .dot-dev {
+    background: var(--violet-dim);
+    animation: pulse-violet 2.2s ease-in-out infinite;
+  }
+
+  .venture-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13.5px;
+    color: rgba(240,238,255,0.8);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .venture-item.visible { opacity: 1; transform: translateY(0); }
+  .venture-item:last-child { border-bottom: none; }
+
+  .venture-item::before {
+    content: '';
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--violet);
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  /* â”€â”€â”€ WHY SECTION â”€â”€â”€ */
+  .why-section {
+    padding: 120px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--violet-dim);
+    margin-bottom: 14px;
+  }
+
+  .section-heading {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 48px);
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .section-intro {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    line-height: 1.75;
+    margin-bottom: 64px;
+    font-weight: 300;
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    perspective: 800px;
+  }
+
+  .why-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 26px;
+    transition: all 0.3s, transform 0.5s ease, --border-angle 0s;
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    --glow-x: 50%;
+    --glow-y: 50%;
+  }
+
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .why-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: radial-gradient(circle 200px at var(--glow-x) var(--glow-y), rgba(139,92,246,0.08), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .why-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(139,92,246,0.25);
+  }
+
+  .why-card:hover::before { opacity: 1; }
+  .why-card:hover::after { opacity: 1; }
+
+  .why-card.has-glow-border {
+    border-color: transparent;
+    background-clip: padding-box;
+  }
+  .why-card.has-glow-border {
+    animation: rotateBorder 3s linear infinite;
+    border-image: conic-gradient(from var(--border-angle), transparent 30%, rgba(139,92,246,0.5) 50%, transparent 70%) 1;
+  }
+
+  .why-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(139,92,246,0.1);
+    border: 1px solid rgba(139,92,246,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .why-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--violet-light);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .why-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .why-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* â”€â”€â”€ REVEAL ANIMATION â”€â”€â”€ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) rotateY(0);
+  }
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* â”€â”€â”€ CTA SECTION â”€â”€â”€ */
+  .cta-section {
+    padding: 80px 48px 120px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .cta-wrapper {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-left .section-heading { margin-bottom: 12px; }
+
+  .cta-left p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-group label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-control::placeholder { color: var(--text-muted); }
+
+  .form-control:focus {
+    border-color: rgba(139,92,246,0.4);
+    background: rgba(139,92,246,0.04);
+  }
+
+  textarea.form-control {
+    resize: none;
+    height: 100px;
+    font-size: 14px;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-top: 4px;
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+  }
+
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.2s;
+  }
+
+  .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(139,92,246,0.35); }
+  .btn-submit:hover::after { background: rgba(255,255,255,0.06); }
+  .btn-submit:active { transform: translateY(0); }
+
+  .form-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .form-status {
+    margin-top: 14px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .form-status[data-state="success"] { color: var(--green); }
+  .form-status[data-state="warning"] { color: var(--violet-light); }
+
+  /* â”€â”€â”€ FOOTER â”€â”€â”€ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .footer-links { display: flex; gap: 20px; }
+
+  .footer-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+
+  .footer-link:hover { color: var(--violet-light); }
+
+  .social-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .social-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .social-btn:hover {
+    background: rgba(139,92,246,0.12);
+    border-color: rgba(139,92,246,0.3);
+  }
+
+  .social-btn svg {
+    width: 15px;
+    height: 15px;
+    fill: var(--text-secondary);
+    transition: fill 0.2s;
+  }
+
+  .social-btn:hover svg { fill: var(--violet-light); }
+
+  /* â”€â”€â”€ MODAL â”€â”€â”€ */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: #0f0f18;
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalIn 0.25s ease;
+  }
+
+  .modal-box::-webkit-scrollbar { width: 4px; }
+  .modal-box::-webkit-scrollbar-track { background: transparent; }
+  .modal-box::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 2px; }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.09); color: var(--text-primary); }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .modal-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    letter-spacing: 0.05em;
+  }
+
+  .modal-content h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--violet-light);
+    margin: 20px 0 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .modal-content p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* â”€â”€â”€ DIVIDER â”€â”€â”€ */
+  .section-divider {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 48px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  /* â”€â”€â”€ ANIMATIONS â”€â”€â”€ */
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(110,231,183,0.4); }
+    50% { opacity: 0.5; box-shadow: 0 0 0 4px rgba(110,231,183,0); }
+  }
+
+  @keyframes pulse-violet {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(167,139,250,0.4); }
+    50% { opacity: 0.4; box-shadow: 0 0 0 4px rgba(167,139,250,0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes heroReveal {
+    from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0px); }
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes heroLineReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes rotateBorder {
+    to { --border-angle: 360deg; }
+  }
+
+  /* â”€â”€â”€ RESPONSIVE â”€â”€â”€ */
+  @media (max-width: 900px) {
+    #cursor-glow { display: none; }
+    nav { padding: 16px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .columns-section { padding: 0 24px; }
+    .columns-grid { grid-template-columns: 1fr; gap: 1px; }
+    .why-section { padding: 80px 24px; }
+    .why-grid { grid-template-columns: 1fr 1fr; perspective: none; }
+    .cta-section { padding: 40px 24px 80px; }
+    .cta-wrapper { padding: 36px 28px; }
+    .cta-inner { grid-template-columns: 1fr; gap: 36px; }
+    footer { flex-direction: column; gap: 20px; align-items: flex-start; padding: 32px 24px; }
+    .hero-watermark { font-size: clamp(36px, 8vw, 80px); }
+  }
+
+  @media (max-width: 600px) {
+    .why-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-title { font-size: clamp(28px, 8vw, 48px); }
+  }
+</style>
+</head>
+<body id="top">
+
+<div id="cursor-glow"></div>
+<div id="scroll-progress"></div>
+
+<!-- â”€â”€â”€ NAVBAR â”€â”€â”€ -->
+<nav>
+  <a class="nav-logo" href="#top" aria-label="Back to top">
+    <svg class="logo-svg" width="85" height="24" viewBox="0 0 85 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="M24 Venture Capital">
+      <path d="M17.2795 24H13.851V12C13.851 10.4229 13.4624 8.98286 12.6853 7.68C11.9311 6.37714 10.9025 5.34857 9.59971 4.59429C8.29689 3.81714 6.85693 3.42857 5.27984 3.42857H3.42847V24H0V0H5.27984C7.4512 0 9.43971 0.537143 11.2454 1.61143C13.0739 2.68572 14.5138 4.09143 15.5652 5.82857C16.6166 4.09143 18.0452 2.68572 19.8508 1.61143C21.6793 0.537143 23.6793 0 25.8506 0H31.1305V24H27.702V3.42857H25.8506C24.2736 3.42857 22.8336 3.81714 21.5308 4.59429C20.2508 5.34857 19.2223 6.37714 18.4452 7.68C17.668 8.98286 17.2795 10.4229 17.2795 12V24Z" fill="#F5F5F5"/>
+      <path d="M57.8441 24H35.5591V17.1429C35.5591 15.8857 35.8677 14.7429 36.4848 13.7143C37.1019 12.6629 37.9247 11.8286 38.9533 11.2114C40.0047 10.5943 41.1589 10.2857 42.416 10.2857H50.9872C51.9243 10.2857 52.7243 9.95429 53.3871 9.29143C54.0728 8.60572 54.4157 7.79429 54.4157 6.85714C54.4157 5.92 54.0728 5.12 53.3871 4.45714C52.7243 3.77143 51.9243 3.42857 50.9872 3.42857H37.2733V0H50.9872C52.2443 0 53.3871 0.308572 54.4157 0.925715C55.4671 1.54286 56.3013 2.37714 56.9184 3.42857C57.5356 4.45714 57.8441 5.6 57.8441 6.85714C57.8441 8.11429 57.5356 9.26857 56.9184 10.32C56.3013 11.3486 55.4671 12.1714 54.4157 12.7886C53.3871 13.4057 52.2443 13.7143 50.9872 13.7143H42.416C41.4789 13.7143 40.6675 14.0571 39.9818 14.7429C39.2961 15.4057 38.9533 16.2057 38.9533 17.1429V20.5714H57.8441V24Z" fill="#F5F5F5"/>
+      <path d="M61.0007 0H64.4292V8.57143C64.4292 9.50857 64.7606 10.32 65.4235 11.0057C66.1092 11.6686 66.9206 12 67.8577 12H81.5715V0H85V24H81.5715V15.4286H67.8577C66.6006 15.4286 65.4463 15.12 64.3949 14.5029C63.3664 13.8857 62.5435 13.0629 61.9264 12.0343C61.3093 10.9829 61.0007 9.82857 61.0007 8.57143V0Z" fill="#F5F5F5"/>
+    </svg>
+  </a>
+  <a class="nav-cta magnetic" href="#contact">Get in touch</a>
+</nav>
+
+<!-- â”€â”€â”€ HERO â”€â”€â”€ -->
+<section class="hero">
+  <div class="hero-watermark" aria-hidden="true">M24 VENTURE CAPITAL</div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Est. 2022 &middot; Web3 Infrastructure</div>
+    <h1 class="hero-title">
+      <span class="hero-line">Blockchain Validator.</span>
+      <span class="hero-line">Algorithmic Trading.</span>
+      <span class="hero-line">Venture Foundation.</span>
+    </h1>
+    <p class="hero-desc">
+      Engineering reliability at every layer &mdash; from protocol validation to AI-driven strategies and early-stage venture investments.
+    </p>
+  </div>
+
+  <!-- THREE COLUMNS -->
+  <div class="columns-section">
+    <div class="columns-grid">
+
+      <!-- VALIDATOR -->
+      <div class="column-card">
+        <div class="col-title">Validator</div>
+        <div class="network-item">
+          <span class="network-name">Near Protocol</span>
+          <span class="status status-live"><span class="dot dot-live"></span>Live</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">Satori Network</span>
+          <span class="status status-dev"><span class="dot dot-dev"></span>In Development</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">Xai Games</span>
+          <span class="status status-live"><span class="dot dot-live"></span>Live</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">Moonriver</span>
+          <span class="status status-live"><span class="dot dot-live"></span>Live</span>
+        </div>
+      </div>
+
+      <!-- AI TRADING -->
+      <div class="column-card">
+        <div class="col-title">AI Trading Strategies</div>
+        <div class="network-item">
+          <span class="network-name">SOL Orderbook Scalper</span>
+          <span class="status status-dev"><span class="dot dot-dev"></span>In Development</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">LuxAlgo Trading</span>
+          <span class="status status-dev"><span class="dot dot-dev"></span>In Development</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">Wave Hybrid Bot</span>
+          <span class="status status-dev"><span class="dot dot-dev"></span>In Development</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">Moby Sniper Bot</span>
+          <span class="status status-dev"><span class="dot dot-dev"></span>In Development</span>
+        </div>
+        <div class="network-item">
+          <span class="network-name">Polymirror Bot</span>
+          <span class="status status-live"><span class="dot dot-live"></span>Live</span>
+        </div>
+      </div>
+
+      <!-- VENTURE -->
+      <div class="column-card">
+        <div class="col-title">Venture Rounds</div>
+        <div class="venture-item">Manta Network</div>
+        <div class="venture-item">Xai Games</div>
+        <div class="venture-item">Humans AI</div>
+        <div class="venture-item">Moonbeam</div>
+        <div class="venture-item">Laos Network</div>
+        <div class="venture-item">Near Protocol</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- â”€â”€â”€ WHY WITH US â”€â”€â”€ -->
+<section class="why-section">
+  <div class="section-label">Why M24</div>
+  <h2 class="section-heading">Built for performance.<br>Trusted for a reason.</h2>
+  <p class="section-intro">
+    From blockchain validation to algorithmic trading and venture investments &mdash; every layer of M24 is engineered for reliability, transparency, and growth. We don't just build systems that work &mdash; we build systems you can depend on.
+  </p>
+
+  <div class="why-grid">
+
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="why-title">Institutional Reliability</div>
+      <div class="why-text">We operate on enterprise-grade infrastructure with SLO-defined performance, real-time monitoring, and proactive incident response. Every node and model follows SRE principles &mdash; because downtime isn't an option.</div>
+    </div>
+
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="why-title">Proven Security Architecture</div>
+      <div class="why-text">All operations follow multi-layer security: key management via HSM, encrypted backups, and strict access controls. Our systems are continuously audited and aligned with ISO 27001 standards.</div>
+    </div>
+
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-3 3"/></svg>
+      </div>
+      <div class="why-title">Transparent Performance</div>
+      <div class="why-text">We provide verifiable metrics &mdash; from validator uptime to AI strategy results. Clients access clear dashboards, real-time analytics, and performance audits you can trust.</div>
+    </div>
+
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      </div>
+      <div class="why-title">Non-Custodial by Design</div>
+      <div class="why-text">M24 never takes custody of client assets. Our validators, trading strategies, and fund structures prioritize independence and full control over your capital.</div>
+    </div>
+
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      </div>
+      <div class="why-title">Global Redundancy</div>
+      <div class="why-text">Our infrastructure spans multiple regions and providers to ensure zero single points of failure. Geo-distributed servers and automated failover protect uptime under any condition.</div>
+    </div>
+
+    <div class="why-card reveal">
+      <div class="why-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div class="why-title">Regulatory Clarity</div>
+      <div class="why-text">We operate under strict compliance frameworks: AML/KYC, GDPR, and risk disclosure policies. Transparency isn't a checkbox &mdash; it's embedded in every process we build.</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- â”€â”€â”€ CTA / CONTACT â”€â”€â”€ -->
+<section class="cta-section" id="contact">
+  <div class="cta-wrapper">
+    <div class="cta-inner">
+      <div class="cta-left reveal-left">
+        <div class="section-label">Contact</div>
+        <h2 class="section-heading" style="font-size:clamp(24px,3vw,38px);">Start a conversation.</h2>
+        <p>Whether you're looking to delegate validation, explore algorithmic strategies, or discuss a venture opportunity &mdash; we'd like to hear from you.</p>
+      </div>
+
+      <div class="cta-right reveal-right">
+        <form id="contact-form" onsubmit="handleSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input id="name" type="text" class="form-control" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label for="company">Company</label>
+              <input id="company" type="text" class="form-control" placeholder="Company (optional)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" class="form-control" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="interest">Area of interest</label>
+            <select id="interest" class="form-control" required>
+              <option value="" disabled selected>Select one...</option>
+              <option value="Blockchain Validation">Blockchain Validation</option>
+              <option value="AI Trading Strategies">AI Trading Strategies</option>
+              <option value="Venture Investment">Venture Investment</option>
+              <option value="General Inquiry">General Inquiry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" class="form-control" placeholder="Tell us about your goals..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit magnetic" id="submit-btn">Send message</button>
+          <p class="form-note">We typically respond within 24 hours. Your data is handled per our Privacy Policy.</p>
+          <p class="form-status" id="form-status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- â”€â”€â”€ FOOTER â”€â”€â”€ -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-copy">&copy; <span id="footer-year">2025</span> M24 Venture Capital. All rights reserved.</div>
+    <div class="footer-links">
+      <button type="button" class="footer-link" data-legal="privacy" onclick="openLegalModal('privacy')">Privacy Policy</button>
+      <button type="button" class="footer-link" data-legal="terms" onclick="openLegalModal('terms')">Terms of Use</button>
+    </div>
+  </div>
+
+  <div class="social-row">
+    <a class="social-btn" href="#" aria-label="X (Twitter)" title="X (Twitter)">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+    </a>
+    <a class="social-btn" href="#" aria-label="LinkedIn" title="LinkedIn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+    </a>
+    <a class="social-btn" href="#" aria-label="Discord" title="Discord">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+      </svg>
+    </a>
+  </div>
+</footer>
+
+<!-- â”€â”€â”€ PRIVACY MODAL â”€â”€â”€ -->
+<div class="modal-overlay" id="privacy-modal" onclick="closePrivacyOutside(event)">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" onclick="closePrivacy()" aria-label="Close">&times;</button>
+    <div class="modal-title" id="modal-title">Privacy Policy</div>
+    <div class="modal-date" id="modal-date">Last updated: January 2025</div>
+    <div class="modal-content" id="modal-content">
+      <p><em>This Privacy Policy will be populated with the full legal text. Please replace this placeholder content with your actual Privacy Policy before publishing.</em></p>
+      <h3>1. Information We Collect</h3>
+      <p>Placeholder &mdash; add your data collection practices here.</p>
+      <h3>2. How We Use Information</h3>
+      <p>Placeholder &mdash; add your data usage policy here.</p>
+      <h3>3. Data Retention</h3>
+      <p>Placeholder &mdash; add your retention policy here.</p>
+      <h3>4. Your Rights (GDPR)</h3>
+      <p>Placeholder &mdash; add GDPR rights information here.</p>
+      <h3>5. AML/KYC Compliance</h3>
+      <p>Placeholder &mdash; add compliance information here.</p>
+      <h3>6. Contact</h3>
+      <p>Placeholder &mdash; add contact details here.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CONTACT_EMAIL = '';
+  const legalContent = {
+    privacy: {
+      title: 'Privacy Policy',
+      updated: 'Last updated: January 2025',
+      html: `
+        <p><em>This Privacy Policy still needs your final legal text before launch. Replace this placeholder content with your actual policy.</em></p>
+        <h3>1. Information We Collect</h3>
+        <p>Placeholder &mdash; add your data collection practices here.</p>
+        <h3>2. How We Use Information</h3>
+        <p>Placeholder &mdash; add your data usage policy here.</p>
+        <h3>3. Data Retention</h3>
+        <p>Placeholder &mdash; add your retention policy here.</p>
+        <h3>4. Your Rights (GDPR)</h3>
+        <p>Placeholder &mdash; add GDPR rights information here.</p>
+        <h3>5. AML/KYC Compliance</h3>
+        <p>Placeholder &mdash; add compliance information here.</p>
+        <h3>6. Contact</h3>
+        <p>Placeholder &mdash; add contact details here.</p>
+      `
+    },
+    terms: {
+      title: 'Terms of Use',
+      updated: 'Last updated: January 2025',
+      html: `
+        <p><em>This Terms of Use document still needs your final legal text before launch. Replace this placeholder content with your actual terms.</em></p>
+        <h3>1. Scope of Service</h3>
+        <p>Placeholder &mdash; describe the scope of services and any limitations here.</p>
+        <h3>2. No Investment Advice</h3>
+        <p>Placeholder &mdash; add your disclaimers and jurisdiction-specific language here.</p>
+        <h3>3. User Responsibilities</h3>
+        <p>Placeholder &mdash; define acceptable use, accuracy of submitted information, and any restrictions here.</p>
+        <h3>4. Risk Disclosure</h3>
+        <p>Placeholder &mdash; add digital asset, validator, and trading risk language here.</p>
+        <h3>5. Limitation of Liability</h3>
+        <p>Placeholder &mdash; add legal limitations and governing law details here.</p>
+        <h3>6. Contact</h3>
+        <p>Placeholder &mdash; add contact details here.</p>
+      `
+    }
+  };
+
+  function openLegalModal(type = 'privacy') {
+    const modalType = legalContent[type] ? type : 'privacy';
+    const modalData = legalContent[modalType];
+    document.getElementById('modal-title').textContent = modalData.title;
+    document.getElementById('modal-date').textContent = modalData.updated;
+    document.getElementById('modal-content').innerHTML = modalData.html;
+    openPrivacy();
+  }
+
+  function openPrivacy() {
+    document.getElementById('privacy-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePrivacy() {
+    document.getElementById('privacy-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closePrivacyOutside(e) {
+    if (e.target === document.getElementById('privacy-modal')) closePrivacy();
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePrivacy(); });
+
+  // â”€â”€â”€ FORM SUBMIT â”€â”€â”€
+  function handleSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('contact-form');
+    const btn = document.getElementById('submit-btn');
+    const status = document.getElementById('form-status');
+    const interest = document.getElementById('interest');
+
+    if (!form.reportValidity() || !interest.value) {
+      status.dataset.state = 'warning';
+      status.textContent = 'Please complete all required fields before sending your message.';
+      return;
+    }
+
+    if (!CONTACT_EMAIL) {
+      status.dataset.state = 'warning';
+      status.textContent = 'Contact delivery is not configured yet. Add a real inbox to CONTACT_EMAIL before publishing this form.';
+      return;
+    }
+
+    const subject = encodeURIComponent(`M24 inquiry: ${interest.value}`);
+    const body = encodeURIComponent([
+      `Name: ${document.getElementById('name').value.trim()}`,
+      `Company: ${document.getElementById('company').value.trim() || 'Not provided'}`,
+      `Email: ${document.getElementById('email').value.trim()}`,
+      `Area of interest: ${interest.value}`,
+      '',
+      document.getElementById('message').value.trim()
+    ].join('\n'));
+
+    status.dataset.state = '';
+    status.textContent = '';
+    btn.textContent = 'Opening mail client...';
+    btn.disabled = true;
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+
+    status.dataset.state = 'success';
+    status.textContent = 'Your mail app should open with a prefilled message. If it does not, contact us directly through the configured inbox.';
+    btn.textContent = 'Send message';
+    btn.disabled = false;
+  }
+
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+
+  // â”€â”€â”€ CURSOR GLOW â”€â”€â”€
+  const cursorGlow = document.getElementById('cursor-glow');
+  let glowX = 0, glowY = 0, targetX = 0, targetY = 0;
+  const isMobile = window.matchMedia('(max-width: 900px)').matches || 'ontouchstart' in window;
+
+  if (!isMobile) {
+    document.addEventListener('mousemove', e => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!cursorGlow.classList.contains('visible')) cursorGlow.classList.add('visible');
+    });
+    document.addEventListener('mouseleave', () => cursorGlow.classList.remove('visible'));
+
+    function animateGlow() {
+      glowX += (targetX - glowX) * 0.15;
+      glowY += (targetY - glowY) * 0.15;
+      cursorGlow.style.transform = `translate(${glowX - 300}px, ${glowY - 300}px)`;
+      requestAnimationFrame(animateGlow);
+    }
+    animateGlow();
+  }
+
+  // â”€â”€â”€ SCROLL: NAVBAR + PROGRESS BAR â”€â”€â”€
+  const navEl = document.querySelector('nav');
+  const progressBar = document.getElementById('scroll-progress');
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+
+        progressBar.style.transform = `scaleX(${progress})`;
+
+        if (scrollTop > 80) {
+          navEl.classList.add('scrolled');
+        } else {
+          navEl.classList.remove('scrolled');
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // â”€â”€â”€ MAGNETIC BUTTONS â”€â”€â”€
+  if (!isMobile) {
+    document.querySelectorAll('.magnetic').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const rect = btn.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = Math.max(-8, Math.min(8, (e.clientX - cx) * 0.3));
+        const dy = Math.max(-8, Math.min(8, (e.clientY - cy) * 0.3));
+        btn.style.transform = `translate(${dx}px, ${dy}px)`;
+        btn.style.transition = 'transform 0.1s ease';
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      });
+    });
+  }
+
+  // â”€â”€â”€ 3D CARD TILT â”€â”€â”€
+  if (!isMobile) {
+    document.querySelectorAll('.why-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rotateY = ((x - cx) / cx) * 4;
+        const rotateX = -((y - cy) / cy) * 4;
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        card.style.setProperty('--glow-x', `${x}px`);
+        card.style.setProperty('--glow-y', `${y}px`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  // â”€â”€â”€ STAGGERED REVEAL (IntersectionObserver) â”€â”€â”€
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = entry.target.dataset.delay || 0;
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, parseInt(delay));
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach((el, i) => {
+    const siblings = el.parentElement.querySelectorAll('.reveal');
+    const index = Array.from(siblings).indexOf(el);
+    if (index >= 0) el.dataset.delay = index * 100;
+    revealObserver.observe(el);
+  });
+
+  // Stagger network items and venture items on scroll
+  const itemObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const items = entry.target.querySelectorAll('.network-item, .venture-item');
+        items.forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 60);
+        });
+        itemObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.column-card').forEach(col => itemObserver.observe(col));
+</script>
+
+</body>
+</html>
+
+
